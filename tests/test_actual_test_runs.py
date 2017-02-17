@@ -141,7 +141,7 @@ def test_it_works_with_actual_tests(tmp_tree_of_tests, get_test_calls, bucket):
     sequences = set()
 
     for x in range(5):
-        result = tmp_tree_of_tests.runpytest('--random-order-bucket={0}'.format(bucket), '--verbose')
+        result = tmp_tree_of_tests.runpytest('--random-order-enable', '--random-order-bucket={0}'.format(bucket), '--verbose')
         result.assert_outcomes(passed=14, failed=3)
         seq = get_test_calls(result)
         check_call_sequence(seq, bucket=bucket)
@@ -159,7 +159,7 @@ def test_random_order_seed_is_respected(testdir, twenty_tests, get_test_calls):
         '3': None,
     }
     for seed in call_sequences.keys():
-        result = testdir.runpytest('--random-order-seed={0}'.format(seed))
+        result = testdir.runpytest('--random-order-enable', '--random-order-seed={0}'.format(seed))
 
         result.stdout.fnmatch_lines([
             '*Using --random-order-seed={0}*'.format(seed),
@@ -169,7 +169,7 @@ def test_random_order_seed_is_respected(testdir, twenty_tests, get_test_calls):
         call_sequences[seed] = get_test_calls(result)
 
     for seed in call_sequences.keys():
-        result = testdir.runpytest('--random-order-seed={0}'.format(seed))
+        result = testdir.runpytest('--random-order-enable', '--random-order-seed={0}'.format(seed))
         result.assert_outcomes(passed=20)
         assert call_sequences[seed] == get_test_calls(result)
 
@@ -178,7 +178,7 @@ def test_random_order_seed_is_respected(testdir, twenty_tests, get_test_calls):
 
 def test_generated_seed_is_reported_and_run_can_be_reproduced(testdir, twenty_tests, get_test_calls):
     testdir.makepyfile(twenty_tests)
-    result = testdir.runpytest('-v')
+    result = testdir.runpytest('--random-order-enable', '-v')
     result.assert_outcomes(passed=20)
     result.stdout.fnmatch_lines([
         '*Using --random-order-seed=*'
